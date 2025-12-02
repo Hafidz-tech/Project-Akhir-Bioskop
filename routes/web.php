@@ -7,31 +7,39 @@ use App\Http\Controllers\Admin\StudioController;
 use App\Http\Controllers\Admin\KursiController;
 use App\Http\Controllers\Admin\JadwalController;
 
-    Route::get('/', function () {
-        return view('admin.layouts.app');
+Route::get('/', function () {
+    return view('admin.layouts.app');
+});
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth'])
+    ->group(function () {
+        Route::resource('genre', GenreController::class);
+        Route::resource('film', FilmController::class);
+        Route::resource('studio', StudioController::class);
+        Route::resource('kursi', KursiController::class);
+        Route::resource('jadwal', JadwalController::class);
     });
 
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })
-        ->middleware(['auth', 'verified'])
-        ->name('dashboard');
+// public landing page
+Route::get('/', [LandingController::class, 'index'])->name('landing');
 
-    Route::prefix('admin')
-        ->name('admin.')
-        ->middleware(['auth'])
-        ->group(function () {
-            Route::resource('genre', GenreController::class);
-            Route::resource('film', FilmController::class);
-            Route::resource('studio', StudioController::class);
-            Route::resource('kursi', KursiController::class);
-            Route::resource('jadwal', JadwalController::class);
-        });
+// user dashboard (login required)
+Route::middleware(['auth', 'role:user'])->group(function () {
+    Route::get('/dashboard-user', [UserDashboardController::class, 'index'])->name('user.dashboard');
+});
 
-    Route::middleware('auth')->group(function () {
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    });
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
-    require __DIR__ . '/auth.php';
+require __DIR__ . '/auth.php';
