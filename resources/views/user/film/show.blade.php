@@ -1,63 +1,46 @@
-@extends('layouts.landing')
+@extends('layouts.app')
 
 @section('content')
-<div class="max-w-5xl mx-auto mt-10 text-white">
+<div class="max-w-6xl mx-auto px-4 py-10">
 
     <div class="flex gap-6">
-        <img src="{{ asset('posters/' . $film->poster) }}"
-             class="w-60 h-80 object-cover rounded-xl">
+        <!-- Poster Film -->
+        <img src="{{ asset('storage/' . $film->poster) }}"
+             class="w-60 rounded-lg shadow">
 
+        <!-- Detail Film -->
         <div>
             <h1 class="text-3xl font-bold">{{ $film->judul }}</h1>
-            <p class="text-gray-400 mt-1">{{ $film->genre->nama }}</p>
-
-            <p class="mt-4 text-gray-300">
-                {{ $film->deskripsi ?? 'Tidak ada deskripsi.' }}
-            </p>
+            <p class="mt-3 text-gray-700">{{ $film->deskripsi }}</p>
         </div>
     </div>
 
-    <h2 class="text-xl font-semibold mt-8 mb-3">Jadwal Tayang</h2>
+    <h2 class="text-2xl font-semibold mt-10">Jadwal Tersedia</h2>
 
-    <div class="space-y-3">
-        @forelse ($film->jadwals as $jadwal)
-            <div class="bg-gray-800 p-4 rounded-lg flex justify-between items-center">
+    @if($film->jadwals->isEmpty())
+        <p class="text-gray-500 mt-2">Tidak ada jadwal tersedia.</p>
+    @else
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            @foreach ($film->jadwals as $jadwal)
+                <div class="p-4 border rounded-lg shadow">
+                    <h3 class="font-bold">{{ $jadwal->studio->nama }}</h3>
+                    <p class="text-gray-600 mt-1">{{ $jadwal->tanggal }}</p>
+                    <p class="text-gray-600">{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</p>
 
-                <div>
-                    <p class="font-semibold">{{ $jadwal->tanggal }}</p>
-                    <p class="text-gray-400">{{ $jadwal->jam }}</p>
-                </div>
-
-                @auth
-                    <!-- User login → bisa pesan -->
-                    @if (Auth::user()->role === 'user')
-                        <a href="{{ route('user.pemesanan.create', ['jadwal' => $jadwal->id]) }}">
-                            <button class="px-4 py-2 bg-purple-600 rounded-lg hover:bg-purple-500">
+                    @auth
+                        @if(auth()->user()->role === 'user')
+                            <a href="#" class="mt-3 inline-block bg-blue-600 text-white px-4 py-2 rounded">
                                 Pesan Tiket
-                            </button>
+                            </a>
+                        @endif
+                    @else
+                        <a href="{{ route('login') }}" class="mt-3 inline-block bg-gray-600 text-white px-4 py-2 rounded">
+                            Login untuk memesan
                         </a>
-                    @endif
-
-                    <!-- Admin tidak bisa pesan -->
-                    @if (Auth::user()->role === 'admin')
-                        <span class="text-gray-400 text-sm">Admin tidak bisa memesan tiket</span>
-                    @endif
-                @endauth
-
-                @guest
-                    <!-- Guest → diarahkan ke login -->
-                    <a href="{{ route('login') }}">
-                        <button class="px-4 py-2 bg-purple-600 rounded-lg hover:bg-purple-500">
-                            Login untuk Memesan
-                        </button>
-                    </a>
-                @endguest
-            </div>
-
-        @empty
-            <p class="text-gray-400">Tidak ada jadwal tersedia.</p>
-        @endforelse
-    </div>
-
+                    @endauth
+                </div>
+            @endforeach
+        </div>
+    @endif
 </div>
 @endsection
