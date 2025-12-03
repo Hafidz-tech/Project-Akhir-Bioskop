@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Film extends Model
 {
-    protected $fillable = [
-        'judul', 'sinopsis', 'durasi', 'harga', 'genre_id', 'poster'
-    ];
+    protected $fillable = ['judul', 'sinopsis', 'durasi', 'harga', 'genre_id', 'poster'];
+
+    public function jadwals()
+    {
+        return $this->hasMany(Jadwal::class);
+    }
 
     public function genre()
     {

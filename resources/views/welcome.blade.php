@@ -24,10 +24,10 @@
                 <button @click="openLogin = true" class="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" class="w-6 h-6">
                         <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4
-                    0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4
-                    6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516
-                    10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168
-                    1.332-.678.678-.83 1.418-.832 1.664h10z" />
+                        0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4
+                        6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516
+                        10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168
+                        1.332-.678.678-.83 1.418-.832 1.664h10z" />
                     </svg>
                 </button>
             @endguest
@@ -38,12 +38,12 @@
                     <button @click="open = !open" class="p-2 rounded-full bg-gray-700">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-7 h-7" viewBox="0 0 16 16">
                             <path d="M8 8a3 3 0 1 0 0-6
-                        3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4
-                        0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1
-                        1H3s-1 0-1-1 1-4 6-4 6 3 6
-                        4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516
-                        10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168
-                        1.332-.678.678-.83 1.418-.832 1.664h10z" />
+                            3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4
+                            0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1
+                            1H3s-1 0-1-1 1-4 6-4 6 3 6
+                            4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516
+                            10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168
+                            1.332-.678.678-.83 1.418-.832 1.664h10z" />
                         </svg>
                     </button>
 
@@ -74,8 +74,7 @@
             x-transition:enter-start="opacity-0 scale-50 rotate-6"
             x-transition:enter-end="opacity-100 scale-100 rotate-0"
             x-transition:leave="transform transition duration-200 ease-in"
-            x-transition:leave-start="opacity-100 scale-100"
-            x-transition:leave-end="opacity-0 scale-75">
+            x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-75">
 
             <h2 class="text-xl font-bold mb-4">Login to CineMagic</h2>
 
@@ -148,7 +147,11 @@
                 <div class="bg-gray-800 p-2 rounded-xl hover:scale-105 transition">
 
                     <!-- poster dari public/posters -->
-                    <img src="{{ asset('posters/' . $film->poster) }}" class="w-full h-56 object-cover rounded-lg">
+                    <a href="{{ route('film.show', $film->id) }}">
+                        <img src="{{ asset('posters/' . $film->poster) }}"
+                            class="w-full h-56 object-cover rounded-lg cursor-pointer hover:opacity-80 transition">
+                    </a>
+
 
                     <p class="mt-2 font-semibold">{{ $film->judul }}</p>
 

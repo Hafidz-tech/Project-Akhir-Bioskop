@@ -29,6 +29,9 @@ Route::prefix('admin')
         Route::resource('kursi', KursiController::class);
         Route::resource('jadwal', JadwalController::class);
     });
+// Halaman detail + jadwal film
+Route::get('/film/{film}', [App\Http\Controllers\User\FilmController::class, 'show'])
+    ->name('film.show');
 
 // public landing page
 Route::get('/', [LandingController::class, 'index'])->name('landing');
