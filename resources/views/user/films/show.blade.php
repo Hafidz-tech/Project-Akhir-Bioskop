@@ -5,7 +5,7 @@
 
     <div class="flex flex-col md:flex-row gap-6">
         <!-- Poster Film -->
-        <img src="{{ asset('storage/' . $film->poster) }}"
+        <img src="{{ asset('posters/' . $film->poster) }}"
              class="w-60 rounded-lg shadow">
 
         <!-- Detail Film -->
@@ -13,7 +13,6 @@
             <h1 class="text-3xl font-bold">{{ $film->judul }}</h1>
 
             <div class="mt-3 space-y-1 text-gray-200">
-                <p><span class="font-semibold">ID:</span> {{ $film->id }}</p>
                 <p><span class="font-semibold">Sinopsis:</span> {{ $film->sinopsis }}</p>
                 <p><span class="font-semibold">Durasi:</span> {{ $film->durasi }} menit</p>
                 <p><span class="font-semibold">Harga Tiket:</span> Rp {{ number_format($film->harga, 0, ',', '.') }}</p>
