@@ -51,7 +51,7 @@
                 <p class="text-sm text-gray-400">
                     {{ $film->genre->nama ?? 'Unknown' }}
                 </p>
-
+joijijijijij
             </div>
         @empty
             <p class="text-gray-400">Tidak ada film pada genre ini.</p>
