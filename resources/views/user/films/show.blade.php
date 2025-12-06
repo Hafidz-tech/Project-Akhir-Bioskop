@@ -1,7 +1,8 @@
 @extends('layouts.landing')
 
 @section('content')
-<div class="max-w-6xl mx-auto px-4 py-10" x-data="{ selectedDay: null }">
+<div class="max-w-6xl mx-auto px-4 py-10"
+     x-data="{ selectedDay: null, openLogin:false }">
 
     {{-- DETAIL FILM --}}
     <div class="flex flex-col md:flex-row gap-6">
@@ -57,7 +58,7 @@
         @endforeach
     </div>
 
-    {{-- RESULT: JADWAL HARI YANG DIPILIH --}}
+    {{-- RESULT: JADWAL --}}
     <div class="mt-6" x-show="selectedDay" x-collapse>
         @foreach ($days as $day)
             @php
@@ -83,7 +84,7 @@
                                 {{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}
                             </p>
 
-                            {{-- Kursi Tersedia --}}
+                            {{-- Kursi --}}
                             @php
                                 $total = $jadwal->studio->kursis->count();
                                 $booked = $jadwal->pemesanan()->count();
@@ -96,7 +97,7 @@
                                 / {{ $total }}
                             </p>
 
-                            {{-- Tombol Pesan --}}
+                            {{-- TOMBOL PESAN --}}
                             @auth
                                 @if (auth()->user()->role === 'user')
                                     <a href="{{ route('user.pesan', $jadwal->id) }}"
@@ -105,10 +106,11 @@
                                     </a>
                                 @endif
                             @else
-                                <a href="{{ route('login') }}"
-                                   class="mt-3 inline-block bg-gray-600 text-white px-4 py-1 rounded text-sm">
-                                    Login untuk memesan
-                                </a>
+                                <button
+                                    @click="openLogin = true"
+                                    class="mt-3 inline-block bg-blue-600 text-white px-4 py-1 rounded text-sm">
+                                    Pesan Tiket
+                                </button>
                             @endauth
                         </div>
                     @endforeach
@@ -116,6 +118,43 @@
 
             </div>
         @endforeach
+    </div>
+
+    {{-- MODAL LOGIN --}}
+    <div
+        x-show="openLogin"
+        x-transition.opacity
+        class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+    >
+        <div
+            class="bg-gray-800 w-full max-w-sm p-6 rounded-lg shadow-lg border border-gray-700"
+            x-transition.scale
+        >
+            <h2 class="text-xl font-bold mb-4 text-center">Login Dulu</h2>
+
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+
+                <div class="mb-3">
+                    <label class="text-sm">Email</label>
+                    <input type="email" name="email" class="w-full p-2 rounded bg-gray-900 border border-gray-700">
+                </div>
+
+                <div class="mb-4">
+                    <label class="text-sm">Password</label>
+                    <input type="password" name="password" class="w-full p-2 rounded bg-gray-900 border border-gray-700">
+                </div>
+
+                <button class="w-full bg-blue-600 py-2 rounded">Login</button>
+            </form>
+
+            <button
+                @click="openLogin=false"
+                class="mt-3 text-center w-full text-gray-400 hover:text-white"
+            >
+                Batal
+            </button>
+        </div>
     </div>
 
 </div>
