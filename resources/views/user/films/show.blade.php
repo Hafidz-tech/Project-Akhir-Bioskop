@@ -1,105 +1,122 @@
 @extends('layouts.landing')
 
 @section('content')
-    <div class="max-w-6xl mx-auto px-4 py-10">
+<div class="max-w-6xl mx-auto px-4 py-10" x-data="{ selectedDay: null }">
 
-        <div class="flex flex-col md:flex-row gap-6">
-            <!-- Poster Film -->
-            <img src="{{ asset('posters/' . $film->poster) }}" class="w-60 rounded-lg shadow">
+    {{-- DETAIL FILM --}}
+    <div class="flex flex-col md:flex-row gap-6">
+        <img src="{{ asset('posters/' . $film->poster) }}" class="w-60 rounded-lg shadow">
 
-            <!-- Detail Film -->
-            <div class="flex-1">
-                <h1 class="text-3xl font-bold">{{ $film->judul }}</h1>
+        <div class="flex-1">
+            <h1 class="text-3xl font-bold">{{ $film->judul }}</h1>
 
-                <!-- SINOPSIS DENGAN READ MORE -->
-                <div class="mt-3 text-gray-200 leading-relaxed" x-data="{ expand: false }">
+            {{-- SINOPSIS --}}
+            <div class="mt-3 text-gray-200 leading-relaxed" x-data="{ expand: false }">
+                <p class="font-semibold">Sinopsis:</p>
+                <p x-show="expand" x-collapse>{{ $film->sinopsis }}</p>
+                <p x-show="!expand" x-collapse>{{ Str::limit($film->sinopsis, 180) }}</p>
 
-                    <p class="font-semibold">Sinopsis:</p>
+                <button @click="expand = !expand" class="mt-2 text-blue-400 hover:underline">
+                    <span x-show="!expand">Read more</span>
+                    <span x-show="expand">Read less</span>
+                </button>
+            </div>
 
-                    <!-- Teks penuh -->
-                    <p x-show="expand" x-collapse>
-                        {{ $film->sinopsis }}
-                    </p>
-
-                    <!-- Teks pendek (dipotong 180 karakter) -->
-                    <p x-show="!expand" x-collapse>
-                        {{ Str::limit($film->sinopsis, 180) }}
-                    </p>
-
-                    <!-- Tombol -->
-                    <button @click="expand = !expand" class="mt-2 text-blue-400 hover:underline">
-                        <span x-show="!expand">Read more</span>
-                        <span x-show="expand">Read less</span>
-                    </button>
-                </div>
-
-                <!-- Detail lainnya -->
-                <div class="mt-4 space-y-1 text-gray-200">
-                    <p><span class="font-semibold">Durasi:</span> {{ $film->durasi }} menit</p>
-                    <p><span class="font-semibold">Harga Tiket:</span> Rp {{ number_format($film->harga, 0, ',', '.') }}</p>
-                    <p>
-                        <span class="font-semibold">Genre:</span>
-                        {{ $film->genre->nama ?? 'Tidak ada genre' }}
-                    </p>
-                </div>
+            <div class="mt-4 space-y-1 text-gray-200">
+                <p><span class="font-semibold">Durasi:</span> {{ $film->durasi }} menit</p>
+                <p><span class="font-semibold">Harga Tiket:</span> Rp {{ number_format($film->harga, 0, ',', '.') }}</p>
+                <p><span class="font-semibold">Genre:</span> {{ $film->genre->nama }}</p>
             </div>
         </div>
-
-        <!-- JADWAL PER HARI OTOMATIS -->
-        <h2 class="text-2xl font-semibold mt-10">Jadwal Tayang per Hari</h2>
-
-        @php
-            // Logika generate 7 hari ke depan
-            $days = [];
-            for ($i = 0; $i < 7; $i++) {
-                $days[] = now()->addDays($i)->format('Y-m-d');
-            }
-        @endphp
-
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mt-4">
-            @foreach ($days as $day)
-                <div class="p-4 bg-gray-800 border border-gray-700 rounded-lg shadow">
-                    <h3 class="font-bold text-white">
-                        {{ \Carbon\Carbon::parse($day)->translatedFormat('l, d M') }}
-                    </h3>
-
-                    @php
-                        // Filter jadwal sesuai tanggal
-                        $filtered = $film->jadwals->filter(function ($jadwal) use ($day) {
-                            return $jadwal->tanggal == $day;
-                        });
-                    @endphp
-
-                    @if ($filtered->isEmpty())
-                        <p class="text-gray-500 text-sm mt-2">Tidak ada jadwal</p>
-                    @else
-                        @foreach ($filtered as $jadwal)
-                            <div class="mt-3 p-2 bg-gray-900 rounded-lg border border-gray-700">
-                                <p class="text-sm">{{ $jadwal->studio->nama }}</p>
-                                <p class="text-xs text-gray-400">
-                                    {{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}
-                                </p>
-
-                                @auth
-                                    @if (auth()->user()->role === 'user')
-                                        <a href="{{ route('user.pesan', $jadwal->id) }}"
-                                            class="mt-2 block bg-blue-600 text-white text-center text-xs px-3 py-1 rounded">
-                                            Pesan Tiket
-                                        </a>
-                                    @endif
-                                @else
-                                    <a href="{{ route('login') }}"
-                                        class="mt-2 block bg-gray-600 text-white text-center text-xs px-3 py-1 rounded">
-                                        Login untuk memesan
-                                    </a>
-                                @endauth
-                            </div>
-                        @endforeach
-                    @endif
-                </div>
-            @endforeach
-        </div>
-
     </div>
-@endsection
 
+    {{-- FILTER HARI --}}
+    <h2 class="text-2xl font-semibold mt-10">Pilih Hari Tayang</h2>
+
+    @php
+        $days = [];
+        for ($i = 0; $i < 7; $i++) {
+            $days[] = now()->addDays($i);
+        }
+    @endphp
+
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mt-4">
+        @foreach ($days as $day)
+            @php
+                $dayKey = $day->format('Y-m-d');
+            @endphp
+
+            <div
+                @click="selectedDay === '{{ $dayKey }}' ? selectedDay = null : selectedDay = '{{ $dayKey }}'"
+                class="cursor-pointer p-4 bg-gray-800 border border-gray-700 hover:bg-gray-700 rounded-lg shadow transition"
+            >
+                <h3 class="font-bold text-white">
+                    {{ $day->translatedFormat('l, d M') }}
+                </h3>
+            </div>
+        @endforeach
+    </div>
+
+    {{-- RESULT: JADWAL HARI YANG DIPILIH --}}
+    <div class="mt-6" x-show="selectedDay" x-collapse>
+        @foreach ($days as $day)
+            @php
+                $dayKey = $day->format('Y-m-d');
+                $filtered = $film->jadwals->filter(fn($j) => $j->tanggal == $dayKey);
+            @endphp
+
+            <div x-show="selectedDay === '{{ $dayKey }}'" x-collapse>
+
+                <h3 class="text-xl font-semibold mb-3">
+                    Jadwal untuk {{ $day->translatedFormat('l, d M') }}
+                </h3>
+
+                {{-- Jika tidak ada jadwal --}}
+                @if ($filtered->isEmpty())
+                    <p class="text-gray-400">Tidak ada jadwal hari ini</p>
+                @else
+                    {{-- Daftar Jadwal --}}
+                    @foreach ($filtered as $jadwal)
+                        <div class="p-4 mb-3 bg-gray-900 rounded-lg border border-gray-700 shadow">
+                            <p class="font-semibold">{{ $jadwal->studio->nama }}</p>
+                            <p class="text-gray-400 text-sm">
+                                {{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}
+                            </p>
+
+                            {{-- Kursi Tersedia --}}
+                            @php
+                                $total = $jadwal->studio->kursis->count();
+                                $booked = $jadwal->pemesanan()->count();
+                                $available = $total - $booked;
+                            @endphp
+
+                            <p class="mt-2 text-sm">
+                                Kursi tersedia:
+                                <span class="font-bold text-green-400">{{ $available }}</span>
+                                / {{ $total }}
+                            </p>
+
+                            {{-- Tombol Pesan --}}
+                            @auth
+                                @if (auth()->user()->role === 'user')
+                                    <a href="{{ route('user.pesan', $jadwal->id) }}"
+                                       class="mt-3 inline-block bg-blue-600 text-white px-4 py-1 rounded text-sm">
+                                        Pesan Tiket
+                                    </a>
+                                @endif
+                            @else
+                                <a href="{{ route('login') }}"
+                                   class="mt-3 inline-block bg-gray-600 text-white px-4 py-1 rounded text-sm">
+                                    Login untuk memesan
+                                </a>
+                            @endauth
+                        </div>
+                    @endforeach
+                @endif
+
+            </div>
+        @endforeach
+    </div>
+
+</div>
+@endsection

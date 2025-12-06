@@ -9,7 +9,7 @@
 
 <!-- NAVBAR -->
 <nav class="w-full px-6 py-4 flex justify-between items-center bg-black/40 backdrop-blur">
-    <h1 class="text-xl font-bold">🎬 CineMagic</h1>
+    <h1 class="text-xl font-bold">CinemaZ</h1>
 
     <div class="flex items-center gap-3">
         <form action="{{ route('logout') }}" method="POST">

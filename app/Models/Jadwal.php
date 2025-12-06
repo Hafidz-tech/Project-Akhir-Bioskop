@@ -17,4 +17,10 @@ class Jadwal extends Model
     {
         return $this->belongsTo(Studio::class);
     }
+
+    public function pemesanan()
+{
+    return $this->hasMany(Pemesanan::class);
+}
+
 }

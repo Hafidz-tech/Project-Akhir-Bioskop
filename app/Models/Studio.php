@@ -13,7 +13,7 @@ class Studio extends Model
         return $this->hasMany(Film::class);
     }
 
-    public function kursi()
+    public function kursis()
     {
         return $this->hasMany(Kursi::class);
     }
