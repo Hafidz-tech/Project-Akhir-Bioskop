@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\FilmController as AdminFilmController;
 use App\Http\Controllers\Admin\StudioController;
 use App\Http\Controllers\Admin\KursiController;
 use App\Http\Controllers\Admin\JadwalController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 
 // USER Controllers
 use App\Http\Controllers\User\FilmController as UserFilmController;
@@ -49,10 +50,11 @@ Route::prefix('admin')
     ->middleware(['auth', 'role:admin'])
     ->group(function () {
 
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
+        // Dashboard (menggunakan controller)
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+            ->name('dashboard');
 
+        // CRUD
         Route::resource('genre', GenreController::class);
         Route::resource('film', AdminFilmController::class);
         Route::resource('studio', StudioController::class);
@@ -72,4 +74,5 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Auth (login, register, logout)
 require __DIR__.'/auth.php';

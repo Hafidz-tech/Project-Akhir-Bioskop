@@ -21,7 +21,7 @@
                 </li>
                 <li class="sidebar-item {{ Request::is('dashboard') ? 'selected' : '' }}">
                     <a class="sidebar-link {{ Request::is('dashboard') ? 'active' : '' }}"
-                        href="{{ route('dashboard') }}" aria-expanded="false">
+                        href="{{ route('admin.dashboard') }}" aria-expanded="false">
                         <span><i class="ti ti-layout-dashboard"></i></span>
                         <span class="hide-menu">Dashboard</span>
                     </a>
